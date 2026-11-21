@@ -1,0 +1,758 @@
+[
+  {
+    "id": "tab_ac",
+    "type": "tab",
+    "label": "Smart AC (MQTT)",
+    "disabled": false,
+    "info": "ESP32 + DHT11 air conditioner simulated on Wokwi.\nTelemetry and commands through MQTT."
+  },
+  {
+    "id": "broker1",
+    "type": "mqtt-broker",
+    "name": "shiftr.io public broker",
+    "broker": "wss://public.cloud.shiftr.io",
+    "port": "443",
+    "clientid": "",
+    "autoConnect": true,
+    "usetls": false,
+    "protocolVersion": "4",
+    "keepalive": "60",
+    "cleansession": true,
+    "autoUnsubscribe": true,
+    "birthTopic": "",
+    "birthQos": "0",
+    "birthPayload": "",
+    "birthMsg": {},
+    "closeTopic": "",
+    "closeQos": "0",
+    "closePayload": "",
+    "closeMsg": {},
+    "willTopic": "",
+    "willQos": "0",
+    "willPayload": "",
+    "willMsg": {},
+    "userProps": "",
+    "sessionExpiry": "",
+    "credentials": {
+      "user": "public",
+      "password": "public"
+    }
+  },
+  {
+    "id": "ui_base",
+    "type": "ui-base",
+    "name": "Smart AC",
+    "path": "/dashboard",
+    "appIcon": "",
+    "includeClientData": true,
+    "acceptsClientConfig": [
+      "ui-notification",
+      "ui-control"
+    ],
+    "showPathInSidebar": false,
+    "headerContent": "page",
+    "navigationStyle": "none",
+    "titleBarStyle": "default",
+    "showReconnectNotification": true,
+    "notificationDisplayTime": 1,
+    "showDisconnectNotification": true
+  },
+  {
+    "id": "ui_theme",
+    "type": "ui-theme",
+    "name": "AC theme",
+    "colors": {
+      "surface": "#0b3d5c",
+      "primary": "#0a84c6",
+      "bgPage": "#eef3f7",
+      "groupBg": "#ffffff",
+      "groupOutline": "#d5e2ec"
+    },
+    "sizes": {
+      "density": "default",
+      "pagePadding": "14px",
+      "groupGap": "14px",
+      "groupBorderRadius": "10px",
+      "widgetGap": "12px"
+    }
+  },
+  {
+    "id": "ui_page",
+    "type": "ui-page",
+    "name": "Smart Air Conditioner",
+    "ui": "ui_base",
+    "path": "/ac",
+    "icon": "air-conditioner",
+    "layout": "grid",
+    "theme": "ui_theme",
+    "breakpoints": [
+      {
+        "name": "Default",
+        "px": "0",
+        "cols": "3"
+      },
+      {
+        "name": "Tablet",
+        "px": "576",
+        "cols": "6"
+      },
+      {
+        "name": "Small Desktop",
+        "px": "768",
+        "cols": "9"
+      },
+      {
+        "name": "Desktop",
+        "px": "1024",
+        "cols": "12"
+      }
+    ],
+    "order": 1,
+    "className": "",
+    "visible": "true",
+    "disabled": "false"
+  },
+  {
+    "id": "g_climate",
+    "type": "ui-group",
+    "name": "Room climate (DHT11)",
+    "page": "ui_page",
+    "width": "6",
+    "height": "1",
+    "order": 1,
+    "showTitle": true,
+    "className": "",
+    "visible": "true",
+    "disabled": "false",
+    "groupType": "default"
+  },
+  {
+    "id": "g_control",
+    "type": "ui-group",
+    "name": "AC remote control",
+    "page": "ui_page",
+    "width": "3",
+    "height": "1",
+    "order": 2,
+    "showTitle": true,
+    "className": "",
+    "visible": "true",
+    "disabled": "false",
+    "groupType": "default"
+  },
+  {
+    "id": "g_state",
+    "type": "ui-group",
+    "name": "AC status",
+    "page": "ui_page",
+    "width": "3",
+    "height": "1",
+    "order": 3,
+    "showTitle": true,
+    "className": "",
+    "visible": "true",
+    "disabled": "false",
+    "groupType": "default"
+  },
+  {
+    "id": "g_hist",
+    "type": "ui-group",
+    "name": "History (last 10 min)",
+    "page": "ui_page",
+    "width": "12",
+    "height": "1",
+    "order": 4,
+    "showTitle": true,
+    "className": "",
+    "visible": "true",
+    "disabled": "false",
+    "groupType": "default"
+  },
+  {
+    "id": "c1",
+    "type": "comment",
+    "name": "1) TELEMETRY  ESP32 -> broker -> Node-RED -> dashboard",
+    "info": "",
+    "z": "tab_ac",
+    "x": 260,
+    "y": 40,
+    "wires": []
+  },
+  {
+    "id": "c2",
+    "type": "comment",
+    "name": "2) COMMANDS  dashboard -> broker -> ESP32",
+    "info": "",
+    "z": "tab_ac",
+    "x": 950,
+    "y": 250,
+    "wires": []
+  },
+  {
+    "id": "c3",
+    "type": "comment",
+    "name": "3) DEVICE STATUS  (retained + Last Will)",
+    "info": "",
+    "z": "tab_ac",
+    "x": 230,
+    "y": 420,
+    "wires": []
+  },
+  {
+    "id": "mq_tel",
+    "type": "mqtt in",
+    "name": "telemetry",
+    "topic": "enp/zaki/ac/telemetry",
+    "qos": "0",
+    "datatype": "json",
+    "broker": "broker1",
+    "nl": false,
+    "rap": true,
+    "rh": 0,
+    "inputs": 0,
+    "z": "tab_ac",
+    "x": 120,
+    "y": 160,
+    "wires": [
+      [
+        "fn_split",
+        "dbg_tel"
+      ]
+    ]
+  },
+  {
+    "id": "dbg_tel",
+    "type": "debug",
+    "name": "telemetry",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": true,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "payload.temp",
+    "statusType": "msg",
+    "z": "tab_ac",
+    "x": 330,
+    "y": 100,
+    "wires": []
+  },
+  {
+    "id": "fn_split",
+    "type": "function",
+    "name": "Parse telemetry",
+    "func": "// Split the JSON telemetry into one message per widget\nconst d = msg.payload;\nif (typeof d !== 'object' || d === null) return null;\n\nconst last = context.get('last') || {};\n// re-sync the controls when a value changes, and every 5 messages (page reloads)\nconst n = (context.get('n') || 0) + 1; context.set('n', n);\nconst changed = (k) => { const c = last[k] !== d[k] || n % 5 === 0; last[k] = d[k]; return c; };\n\nconst fanTxt = ['OFF', 'LOW', 'MEDIUM', 'HIGH'][d.fan] || '-';\nconst icons = { COOLING: '❄️ COOLING', HEATING: '🔥 HEATING', IDLE: '⏸️ IDLE (setpoint reached)',\n                FAN: '🌀 FAN ONLY', OFF: '⛔ OFF' };\n\nconst out = [\n  { payload: d.temp },                                       // 1 temp gauge\n  { payload: d.hum },                                        // 2 humidity gauge\n  [ { topic: 'Room temperature', payload: d.temp },          // 3 chart\n    { topic: 'Setpoint', payload: d.setpoint } ],\n  { payload: icons[d.state] || d.state },                    // 4 state text\n  { payload: fanTxt },                                       // 5 fan text\n  changed('power')    ? { payload: d.power }    : null,      // 6 sync power switch\n  changed('mode')     ? { payload: d.mode }     : null,      // 7 sync mode buttons\n  changed('setpoint') ? { payload: d.setpoint } : null,      // 8 sync slider\n  null                                                       // 9 alert\n];\n\n// High temperature alert (only on transition)\nconst hot = d.temp >= 35;\nif (hot && !context.get('hot')) out[8] = { payload: '⚠️ Room temperature is ' + d.temp + ' °C !' };\ncontext.set('hot', hot);\ncontext.set('last', last);\nreturn out;",
+    "outputs": 9,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "outputLabels": [
+      "temperature",
+      "humidity",
+      "chart",
+      "state",
+      "fan",
+      "power",
+      "mode",
+      "setpoint",
+      "alert"
+    ],
+    "z": "tab_ac",
+    "x": 340,
+    "y": 220,
+    "wires": [
+      [
+        "g_temp"
+      ],
+      [
+        "g_hum"
+      ],
+      [
+        "chart"
+      ],
+      [
+        "t_state"
+      ],
+      [
+        "t_fan"
+      ],
+      [
+        "sw_power"
+      ],
+      [
+        "bg_mode"
+      ],
+      [
+        "sl_sp"
+      ],
+      [
+        "notif"
+      ]
+    ]
+  },
+  {
+    "id": "g_temp",
+    "type": "ui-gauge",
+    "name": "Temperature",
+    "group": "g_climate",
+    "order": 1,
+    "width": 3,
+    "height": 4,
+    "gtype": "gauge-half",
+    "gstyle": "rounded",
+    "title": "Temperature",
+    "units": "",
+    "icon": "thermometer",
+    "prefix": "",
+    "suffix": "°C",
+    "segments": [
+      {
+        "from": "0",
+        "color": "#2f9bff"
+      },
+      {
+        "from": "18",
+        "color": "#3fbf6f"
+      },
+      {
+        "from": "27",
+        "color": "#ffb020"
+      },
+      {
+        "from": "33",
+        "color": "#ea4d4d"
+      }
+    ],
+    "min": 0,
+    "max": 50,
+    "sizeThickness": 16,
+    "sizeGap": 4,
+    "sizeKeyThickness": 8,
+    "styleRounded": true,
+    "styleGlow": false,
+    "className": "",
+    "z": "tab_ac",
+    "x": 650,
+    "y": 120,
+    "wires": []
+  },
+  {
+    "id": "g_hum",
+    "type": "ui-gauge",
+    "name": "Humidity",
+    "group": "g_climate",
+    "order": 2,
+    "width": 3,
+    "height": 4,
+    "gtype": "gauge-half",
+    "gstyle": "rounded",
+    "title": "Humidity",
+    "units": "",
+    "icon": "water-percent",
+    "prefix": "",
+    "suffix": "%",
+    "segments": [
+      {
+        "from": "0",
+        "color": "#ffb020"
+      },
+      {
+        "from": "30",
+        "color": "#3fbf6f"
+      },
+      {
+        "from": "60",
+        "color": "#2f9bff"
+      }
+    ],
+    "min": 0,
+    "max": 100,
+    "sizeThickness": 16,
+    "sizeGap": 4,
+    "sizeKeyThickness": 8,
+    "styleRounded": true,
+    "styleGlow": false,
+    "className": "",
+    "z": "tab_ac",
+    "x": 650,
+    "y": 160,
+    "wires": []
+  },
+  {
+    "id": "chart",
+    "type": "ui-chart",
+    "group": "g_hist",
+    "name": "History",
+    "label": "Temperature vs setpoint",
+    "order": 1,
+    "chartType": "line",
+    "category": "topic",
+    "categoryType": "msg",
+    "xAxisLabel": "",
+    "xAxisProperty": "",
+    "xAxisPropertyType": "timestamp",
+    "xAxisType": "time",
+    "xAxisFormat": "",
+    "xAxisFormatType": "auto",
+    "xmin": "",
+    "xmax": "",
+    "yAxisLabel": "°C",
+    "yAxisProperty": "payload",
+    "yAxisPropertyType": "msg",
+    "ymin": "10",
+    "ymax": "45",
+    "bins": 10,
+    "action": "append",
+    "stackSeries": false,
+    "pointShape": "false",
+    "pointRadius": 4,
+    "showLegend": true,
+    "removeOlder": "10",
+    "removeOlderUnit": "60",
+    "removeOlderPoints": "",
+    "colors": [
+      "#ea4d4d",
+      "#0a84c6",
+      "#ff7f0e",
+      "#2ca02c",
+      "#a347e1",
+      "#d62728",
+      "#ff9896",
+      "#9467bd",
+      "#c5b0d5"
+    ],
+    "textColor": [
+      "#666666"
+    ],
+    "textColorDefault": true,
+    "gridColor": [
+      "#e5e5e5"
+    ],
+    "gridColorDefault": true,
+    "width": 12,
+    "height": 5,
+    "className": "",
+    "interpolation": "linear",
+    "z": "tab_ac",
+    "x": 660,
+    "y": 200,
+    "wires": [
+      []
+    ]
+  },
+  {
+    "id": "t_state",
+    "type": "ui-text",
+    "group": "g_state",
+    "order": 2,
+    "width": 0,
+    "height": 0,
+    "name": "State",
+    "label": "Compressor",
+    "format": "{{msg.payload}}",
+    "layout": "row-spread",
+    "style": true,
+    "font": "",
+    "fontSize": "18",
+    "color": "#0b3d5c",
+    "wrapText": false,
+    "className": "",
+    "z": "tab_ac",
+    "x": 640,
+    "y": 240,
+    "wires": []
+  },
+  {
+    "id": "t_fan",
+    "type": "ui-text",
+    "group": "g_state",
+    "order": 3,
+    "width": 0,
+    "height": 0,
+    "name": "Fan",
+    "label": "Fan speed",
+    "format": "{{msg.payload}}",
+    "layout": "row-spread",
+    "style": false,
+    "font": "",
+    "fontSize": 16,
+    "color": "#717171",
+    "wrapText": false,
+    "className": "",
+    "z": "tab_ac",
+    "x": 640,
+    "y": 280,
+    "wires": []
+  },
+  {
+    "id": "notif",
+    "type": "ui-notification",
+    "ui": "ui_base",
+    "position": "top right",
+    "colorDefault": false,
+    "color": "#ea4d4d",
+    "displayTime": "5",
+    "showCountdown": true,
+    "outputs": 0,
+    "allowDismiss": true,
+    "dismissText": "Close",
+    "allowConfirm": false,
+    "confirmText": "Confirm",
+    "raw": false,
+    "className": "",
+    "name": "High temp alert",
+    "z": "tab_ac",
+    "x": 660,
+    "y": 440,
+    "wires": []
+  },
+  {
+    "id": "mq_status",
+    "type": "mqtt in",
+    "name": "status (LWT)",
+    "topic": "enp/zaki/ac/status",
+    "qos": "1",
+    "datatype": "utf8",
+    "broker": "broker1",
+    "nl": false,
+    "rap": true,
+    "rh": 0,
+    "inputs": 0,
+    "z": "tab_ac",
+    "x": 130,
+    "y": 470,
+    "wires": [
+      [
+        "fn_status"
+      ]
+    ]
+  },
+  {
+    "id": "fn_status",
+    "type": "change",
+    "name": "pretty status",
+    "rules": [
+      {
+        "t": "set",
+        "p": "payload",
+        "pt": "msg",
+        "to": "payload = 'online' ? '🟢 ONLINE' : '🔴 OFFLINE'",
+        "tot": "jsonata"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false,
+    "z": "tab_ac",
+    "x": 340,
+    "y": 470,
+    "wires": [
+      [
+        "t_dev"
+      ]
+    ]
+  },
+  {
+    "id": "t_dev",
+    "type": "ui-text",
+    "group": "g_state",
+    "order": 1,
+    "width": 0,
+    "height": 0,
+    "name": "Device",
+    "label": "ESP32",
+    "format": "{{msg.payload}}",
+    "layout": "row-spread",
+    "style": false,
+    "font": "",
+    "fontSize": 16,
+    "color": "#717171",
+    "wrapText": false,
+    "className": "",
+    "z": "tab_ac",
+    "x": 630,
+    "y": 480,
+    "wires": []
+  },
+  {
+    "id": "sw_power",
+    "type": "ui-switch",
+    "name": "Power",
+    "label": "Power",
+    "group": "g_control",
+    "order": 1,
+    "width": 0,
+    "height": 0,
+    "passthru": false,
+    "decouple": "false",
+    "topic": "power",
+    "topicType": "str",
+    "style": "",
+    "className": "",
+    "layout": "row-spread",
+    "clickableArea": "switch",
+    "onvalue": "ON",
+    "onvalueType": "str",
+    "onicon": "",
+    "oncolor": "#3fbf6f",
+    "offvalue": "OFF",
+    "offvalueType": "str",
+    "officon": "",
+    "offcolor": "#ea4d4d",
+    "z": "tab_ac",
+    "x": 650,
+    "y": 320,
+    "wires": [
+      [
+        "mq_power"
+      ]
+    ]
+  },
+  {
+    "id": "bg_mode",
+    "type": "ui-button-group",
+    "name": "Mode",
+    "group": "g_control",
+    "order": 2,
+    "width": 0,
+    "height": 0,
+    "label": "Mode",
+    "className": "",
+    "rounded": true,
+    "useThemeColors": true,
+    "passthru": false,
+    "options": [
+      {
+        "label": "Auto",
+        "icon": "",
+        "value": "AUTO",
+        "valueType": "str",
+        "color": "#0a84c6"
+      },
+      {
+        "label": "Cool",
+        "icon": "",
+        "value": "COOL",
+        "valueType": "str",
+        "color": "#2f9bff"
+      },
+      {
+        "label": "Heat",
+        "icon": "",
+        "value": "HEAT",
+        "valueType": "str",
+        "color": "#ea4d4d"
+      },
+      {
+        "label": "Fan",
+        "icon": "",
+        "value": "FAN",
+        "valueType": "str",
+        "color": "#3fbf6f"
+      }
+    ],
+    "topic": "mode",
+    "topicType": "str",
+    "z": "tab_ac",
+    "x": 650,
+    "y": 360,
+    "wires": [
+      [
+        "mq_mode"
+      ]
+    ]
+  },
+  {
+    "id": "sl_sp",
+    "type": "ui-slider",
+    "group": "g_control",
+    "name": "Setpoint",
+    "label": "Setpoint (°C)",
+    "tooltip": "",
+    "order": 3,
+    "width": 0,
+    "height": 0,
+    "passthru": false,
+    "outs": "end",
+    "topic": "setpoint",
+    "topicType": "str",
+    "thumbLabel": "always",
+    "showTicks": "always",
+    "min": "16",
+    "max": "30",
+    "step": "0.5",
+    "className": "",
+    "iconPrepend": "thermometer",
+    "iconAppend": "",
+    "color": "",
+    "colorTrack": "",
+    "colorThumb": "",
+    "showTextField": false,
+    "z": "tab_ac",
+    "x": 650,
+    "y": 400,
+    "wires": [
+      [
+        "mq_sp"
+      ]
+    ]
+  },
+  {
+    "id": "mq_power",
+    "type": "mqtt out",
+    "name": "cmd/power",
+    "topic": "enp/zaki/ac/cmd/power",
+    "qos": "1",
+    "retain": "false",
+    "respTopic": "",
+    "contentType": "",
+    "userProps": "",
+    "correl": "",
+    "expiry": "",
+    "broker": "broker1",
+    "z": "tab_ac",
+    "x": 900,
+    "y": 320,
+    "wires": []
+  },
+  {
+    "id": "mq_mode",
+    "type": "mqtt out",
+    "name": "cmd/mode",
+    "topic": "enp/zaki/ac/cmd/mode",
+    "qos": "1",
+    "retain": "false",
+    "respTopic": "",
+    "contentType": "",
+    "userProps": "",
+    "correl": "",
+    "expiry": "",
+    "broker": "broker1",
+    "z": "tab_ac",
+    "x": 900,
+    "y": 360,
+    "wires": []
+  },
+  {
+    "id": "mq_sp",
+    "type": "mqtt out",
+    "name": "cmd/setpoint",
+    "topic": "enp/zaki/ac/cmd/setpoint",
+    "qos": "1",
+    "retain": "false",
+    "respTopic": "",
+    "contentType": "",
+    "userProps": "",
+    "correl": "",
+    "expiry": "",
+    "broker": "broker1",
+    "z": "tab_ac",
+    "x": 900,
+    "y": 400,
+    "wires": []
+  }
+]
