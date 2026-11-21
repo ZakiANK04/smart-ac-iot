@@ -1,0 +1,19 @@
+WiFi OK, IP = 10.10.0.2
+MQTT connecting... OK
+[PUB] enp/zaki/ac/telemetry -> {"temp":29.0,"hum":55.0,"setpoint":24.0,"power":"ON","mode":"AUTO","state":"COOLING","fan":3}
+[PUB] enp/zaki/ac/telemetry -> {"temp":28.5,"hum":54.0,"setpoint":24.0,"power":"ON","mode":"AUTO","state":"COOLING","fan":2}
+   ...
+[PUB] enp/zaki/ac/telemetry -> {"temp":25.5,"hum":51.0,"setpoint":24.0,"power":"ON","mode":"AUTO","state":"COOLING","fan":1}
+MQTT connecting... failed, rc=-2
+MQTT connecting... OK
+[PUB] enp/zaki/ac/telemetry -> {"temp":24.2,"hum":50.0,"setpoint":24.0,"power":"ON","mode":"AUTO","state":"COOLING","fan":1}
+[PUB] enp/zaki/ac/telemetry -> {"temp":23.9,"hum":50.0,"setpoint":24.0,"power":"ON","mode":"AUTO","state":"IDLE","fan":1}
+[PUB] enp/zaki/ac/telemetry -> {"temp":24.4,"hum":50.0,"setpoint":24.0,"power":"ON","mode":"AUTO","state":"IDLE","fan":1}
+[PUB] enp/zaki/ac/telemetry -> {"temp":21.5,"hum":48.0,"setpoint":24.0,"power":"ON","mode":"AUTO","state":"HEATING","fan":2}
+   ...
+[PUB] enp/zaki/ac/telemetry -> {"temp":23.5,"hum":45.0,"setpoint":24.0,"power":"ON","mode":"AUTO","state":"HEATING","fan":1}
+[PUB] enp/zaki/ac/telemetry -> {"temp":24.0,"hum":45.0,"setpoint":24.0,"power":"ON","mode":"AUTO","state":"IDLE","fan":1}
+[PUB] enp/zaki/ac/telemetry -> {"temp":36.5,"hum":60.0,"setpoint":24.0,"power":"ON","mode":"AUTO","state":"COOLING","fan":3}
+[PUB] enp/zaki/ac/telemetry -> {"temp":29.0,"hum":55.0,"setpoint":24.0,"power":"ON","mode":"AUTO","state":"COOLING","fan":3}
+[SUB] enp/zaki/ac/cmd/mode <- FAN
+[PUB] enp/zaki/ac/telemetry -> {"temp":29.0,"hum":55.0,"setpoint":24.0,"power":"ON","mode":"FAN","state":"FAN","fan":2}
